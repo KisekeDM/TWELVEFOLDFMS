@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>DASHBOARD</title>
+</head>
+<body>
+{% extends 'base.html' %}
+
+{% block title %}Dashboard{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-md-12">
+        <h2 class="fw-bold" style="color: var(--c-vivid-blue);">Dashboard Overview</h2>
+        <p class="text-muted">Welcome to the Twelvefold Financial Management System</p>
+    </div>
+</div>
+
+<div class="row g-4">
+
+    <div class="col-md-3">
+        <div class="card shadow-sm h-100 border-0">
+            <div class="card-body text-center">
+                <h6 class="text-muted text-uppercase mb-2">Total Members</h6>
+                <h2 class="display-4 fw-bold text-dark">{{ total_members }}</h2>
+                <a href="#" class="btn btn-sm btn-outline-primary mt-2">View List</a>
+            </div>
+            <div class="card-footer bg-transparent border-0" style="background-color: var(--c-lavender-mist);"></div>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="card shadow-sm h-100 border-0">
+            <div class="card-body text-center">
+                <h6 class="text-muted text-uppercase mb-2">Total Group Savings</h6>
+                <h2 class="display-6 fw-bold text-success">KES {{ total_savings }}</h2>
+                <small class="text-muted">Accumulated contributions</small>
+            </div>
+            <div class="card-footer bg-transparent border-0" style="background-color: var(--c-pale-purple);"></div>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="card shadow-sm h-100 border-0">
+            <div class="card-body text-center">
+                <h6 class="text-muted text-uppercase mb-2">Active Loans</h6>
+                <h2 class="display-4 fw-bold" style="color: var(--c-vivid-blue);">{{ active_loans_count }}</h2>
+                <p class="mb-0 text-muted">Value: KES {{ total_loan_value }}</p>
+            </div>
+            <div class="card-footer bg-transparent border-0" style="background-color: var(--c-soft-blue);"></div>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="card shadow-sm h-100 border-0">
+            <div class="card-body text-center">
+                <h6 class="text-muted text-uppercase mb-2">Unpaid Fines</h6>
+                <h2 class="display-4 fw-bold text-danger">{{ unpaid_fines }}</h2>
+                <a href="#" class="btn btn-sm btn-outline-danger mt-2">Manage Fines</a>
+            </div>
+            <div class="card-footer bg-transparent border-0 bg-danger bg-opacity-10"></div>
+        </div>
+    </div>
+</div>
+
+<div class="row mt-5">
+    <div class="col-md-8">
+        <div class="card shadow-sm">
+            <div class="card-header bg-white border-bottom-0">
+                <h5 class="mb-0 fw-bold">Recent Transactions</h5>
+            </div>
+            <div class="card-body">
+                <p class="text-muted fst-italic">Transaction table will be implemented in the next step.</p>
+                </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card shadow-sm bg-light">
+            <div class="card-body">
+                <h5 class="fw-bold">Quick Actions</h5>
+                <div class="d-grid gap-2 mt-3">
+                    <button class="btn btn-primary-custom">Record Contribution</button>
+                    <button class="btn btn-outline-dark">New Loan Application</button>
+                    <button class="btn btn-outline-danger">Issue Fine</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+</body>
+</html>

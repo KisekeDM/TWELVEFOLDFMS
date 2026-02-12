@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Loan List</title>
+</head>
+<body>
+{% extends 'base.html' %}
+
+{% block title %}Loan Management{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2">Loan Registry</h1>
+    <div class="btn-toolbar mb-2 mb-md-0">
+        <a href="{% url 'add_loan' %}" class="btn btn-sm btn-primary-custom">
+            + New Loan Application
+        </a>
+    </div>
+</div>
+
+<div class="card shadow-sm">
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle">
+                <thead class="table-light">
+                    <tr>
+                        <th>Date</th>
+                        <th>Member</th>
+                        <th>Principal (KES)</th>
+                        <th>Interest</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for loan in loans %}
+                    <tr>
+                        <td>{{ loan.issue_date|date:"M d, Y" }}</td>
+                        <td>{{ loan.member }}</td>
+                        <td class="fw-bold">{{ loan.principal_amount }}</td>
+                        <td>{{ loan.interest_rate }}%</td>
+                        <td>
+                            {% if loan.status == 'Active' %}
+                                <span class="badge bg-success">Active</span>
+                            {% elif loan.status == 'Pending' %}
+                                <span class="badge bg-warning text-dark">Pending</span>
+                            {% else %}
+                                <span class="badge bg-secondary">{{ loan.status }}</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <a href="{% url 'loan_detail' loan.id %}" class="btn btn-sm btn-outline-primary">Details</a>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="6" class="text-center text-muted py-4">
+                            No loans recorded.
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}
+</body>
+</html>

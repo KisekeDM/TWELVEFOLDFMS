@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Loan Detail</title>
+</head>
+<body>
+{% extends 'base.html' %}
+
+{% block title %}Loan Details{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card shadow-sm">
+            <div class="card-header card-header-custom d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">Loan Application #{{ loan.id }}</h5>
+                <span class="badge bg-light text-dark">{{ loan.status }}</span>
+            </div>
+            <div class="card-body">
+                <h4 class="card-title">{{ loan.member }}</h4>
+                <p class="text-muted mb-4">Applied on {{ loan.issue_date|date:"M d, Y" }}</p>
+
+                <div class="row g-3 mb-4">
+                    <div class="col-md-6">
+                        <div class="p-3 bg-light rounded border">
+                            <small class="text-muted text-uppercase">Principal Amount</small>
+                            <h3 class="fw-bold text-dark">KES {{ loan.principal_amount }}</h3>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="p-3 bg-light rounded border">
+                            <small class="text-muted text-uppercase">Total Repayment</small>
+                            <h3 class="fw-bold text-primary">KES {{ loan.total_repayment }}</h3>
+                            <small class="text-success">
+                                Includes {{ loan.interest_rate }}% interest over {{ loan.duration_months }} month(s)
+                            </small>
+                        </div>
+                    </div>
+                </div>
+
+                {% if loan.status == 'Pending' %}
+                <div class="alert alert-warning">
+                    <i class="bi bi-exclamation-triangle"></i> This loan is pending approval. Verify the member's eligibility before proceeding.
+                </div>
+                <form method="post" class="d-flex gap-2">
+                    {% csrf_token %}
+                    <button type="submit" name="action" value="approve" class="btn btn-success flex-grow-1">
+                        Approve & Activate Loan
+                    </button>
+                    <button type="submit" name="action" value="reject" class="btn btn-danger">
+                        Reject
+                    </button>
+                </form>
+                {% else %}
+                <div class="alert alert-info">
+                    Action taken: Loan is <strong>{{ loan.status }}</strong>.
+                </div>
+                {% endif %}
+            </div>
+            <div class="card-footer bg-white">
+                <a href="{% url 'loan_list' %}" class="btn btn-outline-secondary btn-sm">Back to List</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+</body>
+</html>

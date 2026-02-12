@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Member form</title>
+</head>
+<body>
+{% extends 'base.html' %}
+
+{% block title %}Register Member{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card shadow-sm">
+            <div class="card-header card-header-custom">
+                <h5 class="mb-0">Register New Member</h5>
+            </div>
+            <div class="card-body">
+                <form method="post">
+                    {% csrf_token %} <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label">First Name</label>
+                            {{ form.first_name }}
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Last Name</label>
+                            {{ form.last_name }}
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Phone Number</label>
+                            {{ form.phone_number }}
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Date Joined</label>
+                            {{ form.date_joined }}
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label">Monthly Contribution (KES)</label>
+                            {{ form.monthly_contribution_amount }}
+                        </div>
+                    </div>
+
+                    <div class="mt-4 d-flex justify-content-end">
+                        <a href="{% url 'member_list' %}" class="btn btn-secondary me-2">Cancel</a>
+                        <button type="submit" class="btn btn-primary-custom">Save Member</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+</body>
+</html>

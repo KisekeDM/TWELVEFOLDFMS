@@ -1,0 +1,29 @@
+/* static/css/styles.css */
+:root {
+    /* Your Custom Palette */
+    --c-lavender-mist: #D3D3FF;
+    --c-pale-purple: #CEB5FF;
+    --c-soft-blue: #8EC1DE;
+    --c-vivid-blue: #38A8FF;
+}
+
+body {
+    background-color: #f4f6f9;
+}
+
+/* Navbar Branding */
+.navbar-custom {
+    background-color: var(--c-vivid-blue) !important;
+}
+
+/* Buttons */
+.btn-primary-custom {
+    background-color: var(--c-vivid-blue);
+    border-color: var(--c-vivid-blue);
+    color: white;
+}
+
+.btn-primary-custom:hover {
+    background-color: var(--c-soft-blue);
+    border-color: var(--c-soft-blue);
+}

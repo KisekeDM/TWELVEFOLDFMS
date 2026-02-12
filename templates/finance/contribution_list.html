@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Contribution list</title>
+</head>
+<body>
+{% extends 'base.html' %}
+
+{% block title %}Contributions{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2">Contribution Ledger</h1>
+    <div class="btn-toolbar mb-2 mb-md-0">
+        <a href="{% url 'add_contribution' %}" class="btn btn-sm btn-primary-custom">
+            + Record New Payment
+        </a>
+    </div>
+</div>
+
+<div class="card shadow-sm">
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-hover">
+                <thead class="table-light">
+                    <tr>
+                        <th>Date</th>
+                        <th>Member</th>
+                        <th>Month Paid For</th>
+                        <th>Amount (KES)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for contribution in contributions %}
+                    <tr>
+                        <td>{{ contribution.date|date:"M d, Y" }}</td>
+                        <td>{{ contribution.member }}</td>
+                        <td>
+                            <span class="badge bg-accent text-dark">{{ contribution.month_paid_for }}</span>
+                        </td>
+                        <td class="fw-bold text-success">{{ contribution.amount }}</td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="4" class="text-center text-muted py-4">
+                            No contributions recorded yet.
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}
+</body>
+</html>
