@@ -121,3 +121,8 @@ STATIC_URL = 'static/'
 STATICFILES_DIRS = [
     BASE_DIR / 'static',
     ]
+
+# Authentication Settings
+LOGIN_REDIRECT_URL = '/'   # Redirect to Dashboard (Home)
+LOGOUT_REDIRECT_URL = '/accounts/login/' # Redirect back to login page
+LOGIN_URL = '/accounts/login/' # Where to send unauthenticated users

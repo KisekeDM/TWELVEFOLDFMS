@@ -12,14 +12,14 @@
 {% block content %}
 <div class="row mb-4">
     <div class="col-md-12">
-        <h2 class="fw-bold" style="color: var(--c-vivid-blue);">Dashboard Overview</h2>
+        <h2 class="fw-bold" style="color: var(--c-dark-purple);">Dashboard Overview</h2>
         <p class="text-muted">Welcome to the Twelvefold Financial Management System</p>
     </div>
 </div>
 
 <div class="row g-4">
 
-    <div class="col-md-3">
+    <div class="col-12 col-sm-6 col-lg-3">
         <div class="card shadow-sm h-100 border-0">
             <div class="card-body text-center">
                 <h6 class="text-muted text-uppercase mb-2">Total Members</h6>
@@ -30,7 +30,7 @@
         </div>
     </div>
 
-    <div class="col-md-3">
+    <div class="col-12 col-sm-6 col-lg-3">
         <div class="card shadow-sm h-100 border-0">
             <div class="card-body text-center">
                 <h6 class="text-muted text-uppercase mb-2">Total Group Savings</h6>
@@ -41,7 +41,7 @@
         </div>
     </div>
 
-    <div class="col-md-3">
+    <div class="col-12 col-sm-6 col-lg-3">
         <div class="card shadow-sm h-100 border-0">
             <div class="card-body text-center">
                 <h6 class="text-muted text-uppercase mb-2">Active Loans</h6>
@@ -52,7 +52,7 @@
         </div>
     </div>
 
-    <div class="col-md-3">
+    <div class="col-12 col-sm-6 col-lg-3">
         <div class="card shadow-sm h-100 border-0">
             <div class="card-body text-center">
                 <h6 class="text-muted text-uppercase mb-2">Unpaid Fines</h6>
@@ -71,7 +71,56 @@
                 <h5 class="mb-0 fw-bold">Recent Transactions</h5>
             </div>
             <div class="card-body">
-                <p class="text-muted fst-italic">Transaction table will be implemented in the next step.</p>
+                <div class="table-responsive">
+    <table class="table table-hover align-middle">
+        <thead class="table-light">
+            <tr>
+                <th>Date</th>
+                <th>Type</th>
+                <th>Member</th>
+                <th>Details</th>
+                <th class="text-end">Amount</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in activity_feed %}
+            <tr>
+                <td>{{ item.common_date|date:"M d" }}</td>
+
+                <td>
+                    {% if item.type == 'Contribution' %}
+                        <span class="badge bg-success bg-opacity-10 text-success">Contribution</span>
+                    {% elif item.type == 'Loan' %}
+                        <span class="badge bg-primary bg-opacity-10 text-primary">Loan Application</span>
+                    {% else %}
+                        <span class="badge bg-danger bg-opacity-10 text-danger">Fine</span>
+                    {% endif %}
+                </td>
+
+                <td class="fw-bold">{{ item.member }}</td>
+
+                <td class="text-muted small">
+                    {% if item.type == 'Contribution' %}
+                        Paid for {{ item.month_paid_for }}
+                    {% elif item.type == 'Loan' %}
+                        Status: <strong>{{ item.status }}</strong>
+                    {% else %}
+                        {{ item.reason }}
+                    {% endif %}
+                </td>
+
+                <td class="text-end fw-bold">
+                    KES {{ item.display_amount }}
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="5" class="text-center text-muted py-3">No recent activity found.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
                 </div>
         </div>
     </div>
@@ -83,6 +132,9 @@
                     <button class="btn btn-primary-custom">Record Contribution</button>
                     <button class="btn btn-outline-dark">New Loan Application</button>
                     <button class="btn btn-outline-danger">Issue Fine</button>
+                    <a href="{% url 'download_backup' %}" class="btn btn-outline-secondary">
+                        <i class="bi bi-download"></i> Backup Database
+                    </a>
                 </div>
             </div>
         </div>

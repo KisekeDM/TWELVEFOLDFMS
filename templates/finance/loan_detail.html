@@ -39,10 +39,66 @@
                     </div>
                 </div>
 
+                <div class="card mb-4">
+            <div class="card-body">
+                <div class="d-flex justify-content-between mb-1">
+                    <span>Repayment Progress</span>
+                    <span class="fw-bold">{{ loan.progress_percentage }}%</span>
+                </div>
+                <div class="progress mb-3" style="height: 10px;">
+                    <div class="progress-bar bg-success" role="progressbar" style="width: {{ loan.progress_percentage }}%"></div>
+                </div>
+                <div class="d-flex justify-content-between text-muted">
+                    <small>Paid: KES {{ loan.total_paid }}</small>
+                    <small class="fw-bold text-danger">Balance: KES {{ loan.outstanding_balance }}</small>
+                </div>
+            </div>
+        </div>
+
+                {% if loan.status == 'Active' %}
+                <div class="row">
+                    <div class="col-md-6">
+                        <h5 class="mb-3">Record New Repayment</h5>
+                        <div class="card bg-light border-0">
+                            <div class="card-body">
+                                <form method="post">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="repay" value="true">
+                                    <div class="mb-3">
+                                        <label class="form-label">Amount</label>
+                                        {{ repayment_form.amount }}
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label">Date</label>
+                                        {{ repayment_form.date_paid }}
+                                    </div>
+                                    <button type="submit" class="btn btn-primary-custom w-100">Submit Payment</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <h5 class="mb-3">Payment History</h5>
+                        <ul class="list-group">
+                            {% for payment in loan.repayments.all %}
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                {{ payment.date_paid }}
+                                <span class="badge bg-success rounded-pill">KES {{ payment.amount }}</span>
+                            </li>
+                            {% empty %}
+                            <li class="list-group-item text-muted text-center">No payments recorded yet.</li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                </div>
+                {% endif %}
+
                 {% if loan.status == 'Pending' %}
                 <div class="alert alert-warning">
                     <i class="bi bi-exclamation-triangle"></i> This loan is pending approval. Verify the member's eligibility before proceeding.
                 </div>
+                            {% if user.is_staff %}
                 <form method="post" class="d-flex gap-2">
                     {% csrf_token %}
                     <button type="submit" name="action" value="approve" class="btn btn-success flex-grow-1">
@@ -52,6 +108,13 @@
                         Reject
                     </button>
                 </form>
+            {% else %}
+                {% if loan.status == 'Pending' %}
+                    <div class="alert alert-secondary">
+                        Waiting for Treasurer approval.
+                    </div>
+                {% endif %}
+            {% endif %}
                 {% else %}
                 <div class="alert alert-info">
                     Action taken: Loan is <strong>{{ loan.status }}</strong>.

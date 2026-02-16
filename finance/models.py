@@ -1,6 +1,7 @@
 from django.db import models
 from django.utils import timezone
-from members.models import Member  # Link to the Member app
+from members.models import Member
+from django.db.models import Sum
 
 
 # --- 1. CONTRIBUTION MODEL (Matches SDS D2: Transactions) [cite: 465] ---
@@ -30,7 +31,7 @@ class Loan(models.Model):
     principal_amount = models.DecimalField(max_digits=10, decimal_places=2)
 
     # Interest Rate (1-20%) [cite: 1083]
-    interest_rate = models.DecimalField(max_digits=5, decimal_places=2, default=15.00)
+    interest_rate = models.DecimalField(max_digits=5, decimal_places=2, default=10.00)
 
     # Duration in months [cite: 1081]
     duration_months = models.IntegerField(default=1)
@@ -49,6 +50,30 @@ class Loan(models.Model):
 
     def __str__(self):
         return f"Loan: {self.member} - KES {self.principal_amount}"
+
+    @property
+    def total_repayment(self):
+        rate_decimal = self.interest_rate / 100
+        amount = float(self.principal_amount) * ((1 + float(rate_decimal)) ** self.duration_months)
+        return round(amount, 2)
+
+    @property
+    def total_paid(self):
+        total = self.repayments.aggregate(Sum('amount'))['amount__sum']
+        return float(total) if total else 0.00
+
+    @property
+    def outstanding_balance(self):
+        return round(self.total_repayment - self.total_paid, 2)
+
+    @property
+    def progress_percentage(self):
+        # Calculate percentage for a progress bar
+        if self.total_repayment == 0: return 0
+        percent = (self.total_paid / self.total_repayment) * 100
+        return int(percent)
+
+
 
 
 # --- 3. FINE MODEL (Matches SDS D4: Fines) [cite: 467] ---
@@ -69,3 +94,12 @@ class Fine(models.Model):
         rate_decimal = self.interest_rate / 100
         amount = self.principal_amount * ((1 + rate_decimal) ** self.duration_months)
         return round(amount, 2)
+
+
+class Repayment(models.Model):
+    loan = models.ForeignKey(Loan, on_delete=models.CASCADE, related_name='repayments')
+    amount = models.DecimalField(max_digits=10, decimal_places=2)
+    date_paid = models.DateField(default=timezone.now)
+
+    def __str__(self):
+        return f"Repayment: {self.amount} for Loan #{self.loan.id}"

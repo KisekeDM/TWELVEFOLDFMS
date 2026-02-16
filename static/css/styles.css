@@ -1,29 +1,86 @@
-/* static/css/styles.css */
 :root {
-    /* Your Custom Palette */
     --c-lavender-mist: #D3D3FF;
     --c-pale-purple: #CEB5FF;
+    --c-dark-purple: #a16cff;
     --c-soft-blue: #8EC1DE;
     --c-vivid-blue: #38A8FF;
+    --c-dark-blue: #0d6efd;
 }
 
 body {
-    background-color: #f4f6f9;
+    background-color: #f4f7f6; /* Softer gray background */
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
-/* Navbar Branding */
+/* --- Navigation --- */
 .navbar-custom {
-    background-color: var(--c-vivid-blue) !important;
+    background: linear-gradient(135deg, var(--c-dark-purple), var(--c-pale-purple));
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
 }
 
-/* Buttons */
+.navbar-brand {
+    font-weight: 1000;
+    letter-spacing: 0.5px;
+}
+
+/* --- Cards & Hover Effects --- */
+.card {
+    border: none;
+    border-radius: 12px;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    background-color: white;
+}
+
+/* This adds the "Lift" effect when you mouse over a card */
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+}
+
+.card-header-custom {
+    background-color: var(--c-lavender-mist);
+    color: #333;
+    font-weight: 600;
+    border-radius: 12px 12px 0 0 !important;
+}
+
+/* --- Buttons --- */
 .btn-primary-custom {
-    background-color: var(--c-vivid-blue);
-    border-color: var(--c-vivid-blue);
+    background-color: var(--c-pale-purple);
+    border: none;
+    padding: 8px 20px;
+    border-radius: 8px;
+    transition: all 0.2s;
     color: white;
 }
 
 .btn-primary-custom:hover {
-    background-color: var(--c-soft-blue);
-    border-color: var(--c-soft-blue);
+    background-color: var(--c-pale-purple);
+    transform: scale(1.02); /* Slight grow effect */
+    color: white;
+}
+
+/* --- Tables --- */
+.table {
+    border-collapse: separate;
+    border-spacing: 0 5px; /* Adds space between rows */
+}
+
+.table thead th {
+    border-bottom: 2px solid var(--c-pale-purple);
+    color: #555;
+    font-weight: 600;
+    text-transform: uppercase;
+    font-size: 0.85rem;
+}
+
+.table-hover tbody tr:hover {
+    background-color: #f1faff;
+}
+
+/* --- Badges --- */
+.badge {
+    padding: 6px 10px;
+    border-radius: 6px;
+    font-weight: 500;
 }

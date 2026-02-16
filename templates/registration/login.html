@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Login</title>
+</head>
+<body>
+{% extends 'base.html' %}
+
+{% block title %}Login{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center mt-5">
+    <div class="col-md-4">
+        <div class="card shadow-lg border-0">
+            <div class="card-header navbar-custom text-white text-center py-4">
+                <h4 class="mb-0 fw-bold">Twelvefold FMS</h4>
+                <small>Secure Access</small>
+            </div>
+            <div class="card-body p-4">
+                <form method="post">
+                    {% csrf_token %}
+
+                    {% if form.errors %}
+                        <div class="alert alert-danger text-center mb-3">
+                            Invalid username or password.
+                        </div>
+                    {% endif %}
+
+                    <div class="mb-3">
+                        <label class="form-label text-muted">Username</label>
+                        <input type="text" name="username" class="form-control form-control-lg" autofocus required>
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="form-label text-muted">Password</label>
+                        <input type="password" name="password" class="form-control form-control-lg" required>
+                    </div>
+
+                    <div class="d-grid">
+                        <button type="submit" class="btn btn-primary-custom btn-lg">Sign In</button>
+                    </div>
+                </form>
+            </div>
+            <div class="card-footer text-center bg-light py-3">
+                <small class="text-muted">&copy; 2026 Twelvefold Self-Help Group</small>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+</body>
+</html>
