@@ -24,7 +24,9 @@
             <div class="card-body text-center">
                 <h6 class="text-muted text-uppercase mb-2">Total Members</h6>
                 <h2 class="display-4 fw-bold text-dark">{{ total_members }}</h2>
-                <a href="#" class="btn btn-sm btn-outline-primary mt-2">View List</a>
+                {% if user.is_staff %}
+                    <a href="{% url 'member_list' %}" class="btn btn-sm btn-outline-primary mt-3">View List</a>
+                {% endif %}
             </div>
             <div class="card-footer bg-transparent border-0" style="background-color: var(--c-lavender-mist);"></div>
         </div>
@@ -57,7 +59,9 @@
             <div class="card-body text-center">
                 <h6 class="text-muted text-uppercase mb-2">Unpaid Fines</h6>
                 <h2 class="display-4 fw-bold text-danger">{{ unpaid_fines }}</h2>
-                <a href="#" class="btn btn-sm btn-outline-danger mt-2">Manage Fines</a>
+                {% if user.is_staff %}
+                    <a href="{% url 'fine_list' %}" class="btn btn-sm btn-outline-danger mt-3">Manage Fines</a>
+                {% endif %}
             </div>
             <div class="card-footer bg-transparent border-0 bg-danger bg-opacity-10"></div>
         </div>
@@ -128,13 +132,22 @@
         <div class="card shadow-sm bg-light">
             <div class="card-body">
                 <h5 class="fw-bold">Quick Actions</h5>
-                <div class="d-grid gap-2 mt-3">
-                    <button class="btn btn-primary-custom">Record Contribution</button>
-                    <button class="btn btn-outline-dark">New Loan Application</button>
-                    <button class="btn btn-outline-danger">Issue Fine</button>
-                    <a href="{% url 'download_backup' %}" class="btn btn-outline-secondary">
-                        <i class="bi bi-download"></i> Backup Database
+                <div class="list-group list-group-flush">
+                    <a href="{% url 'add_loan' %}" class="list-group-item list-group-item-action">
+                        <i class="bi bi-cash me-2 text-primary"></i> New Loan Application
                     </a>
+
+                    {% if user.is_staff %}
+                    <a href="{% url 'add_contribution' %}" class="list-group-item list-group-item-action">
+                        <i class="bi bi-wallet2 me-2 text-success"></i> Record Contribution
+                    </a>
+                    <a href="{% url 'add_fine' %}" class="list-group-item list-group-item-action">
+                        <i class="bi bi-exclamation-circle me-2 text-danger"></i> Issue Fine
+                    </a>
+                    <a href="{% url 'download_backup' %}" class="list-group-item list-group-item-action text-secondary">
+                        <i class="bi bi-download me-2"></i> Backup Database
+                    </a>
+                    {% endif %}
                 </div>
             </div>
         </div>

@@ -32,7 +32,9 @@
                         <th>Reason</th>
                         <th>Amount</th>
                         <th>Status</th>
+                        {% if user.is_staff %}
                         <th>Action</th>
+                        {% endif %}
                     </tr>
                 </thead>
                 <tbody>
@@ -49,6 +51,8 @@
                                 <span class="badge bg-danger">Unpaid</span>
                             {% endif %}
                         </td>
+
+                        {% if user.is_staff %}
                         <td>
                             {% if not fine.is_paid %}
                             <a href="{% url 'mark_fine_paid' fine.id %}" class="btn btn-sm btn-outline-success">
@@ -58,11 +62,12 @@
                             <span class="text-muted"><i class="bi bi-check-circle"></i> Cleared</span>
                             {% endif %}
                         </td>
+                        {% endif %}
                     </tr>
                     {% empty %}
                     <tr>
-                        <td colspan="6" class="text-center text-muted py-4">
-                            No fines recorded.
+                        <td colspan="{% if user.is_staff %}6{% else %}5{% endif %}" class="text-center text-muted py-4">
+                            No fines recorded. Good job!
                         </td>
                     </tr>
                     {% endfor %}

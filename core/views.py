@@ -12,25 +12,49 @@ import os
 
 @login_required
 def dashboard(request):
-    total_members = Member.objects.count()
+    user = request.user
+    is_admin = user.is_staff
 
-    savings_data = Contribution.objects.aggregate(Sum('amount'))
-    total_savings = savings_data['amount__sum'] or 0.00
+    # Safely try to get the linked member profile (if it exists)
+    member_profile = getattr(user, 'member_profile', None)
 
-    active_loans_count = Loan.objects.filter(status='Active').count()
+    # 1. KPI COUNTERS & RECENT DATA SELECTION
+    total_members = Member.objects.count()  # Everyone sees total member count
 
-    loan_data = Loan.objects.filter(status='Active').aggregate(Sum('principal_amount'))
-    total_loan_value = loan_data['principal_amount__sum'] or 0.00
+    if is_admin:
+        # ADMIN SEES EVERYTHING
+        savings_data = Contribution.objects.aggregate(Sum('amount'))
+        loan_data = Loan.objects.filter(status='Active').aggregate(Sum('principal_amount'))
 
-    unpaid_fines = Fine.objects.filter(is_paid=False).count()
+        total_savings = savings_data['amount__sum'] or 0.00
+        active_loans_count = Loan.objects.filter(status='Active').count()
+        total_loan_value = loan_data['principal_amount__sum'] or 0.00
+        unpaid_fines = Fine.objects.filter(is_paid=False).count()
 
+        recent_contributions = Contribution.objects.all().order_by('-date')[:5]
+        recent_loans = Loan.objects.all().order_by('-issue_date')[:5]
+        recent_fines = Fine.objects.all().order_by('-date_issued')[:5]
 
-    recent_contributions = Contribution.objects.all().order_by('-date')[:5]
-    recent_loans = Loan.objects.all().order_by('-issue_date')[:5]
-    recent_fines = Fine.objects.all().order_by('-date_issued')[:5]
+    else:
+        # REGULAR USER SEES ONLY THEIR DATA
+        if member_profile:
+            savings_data = Contribution.objects.filter(member=member_profile).aggregate(Sum('amount'))
+            loan_data = Loan.objects.filter(member=member_profile, status='Active').aggregate(Sum('principal_amount'))
 
-    # Combine them into one list
-    # We create a new attribute 'type' for each so the template knows what they are
+            total_savings = savings_data['amount__sum'] or 0.00
+            active_loans_count = Loan.objects.filter(member=member_profile, status='Active').count()
+            total_loan_value = loan_data['principal_amount__sum'] or 0.00
+            unpaid_fines = Fine.objects.filter(member=member_profile, is_paid=False).count()
+
+            recent_contributions = Contribution.objects.filter(member=member_profile).order_by('-date')[:5]
+            recent_loans = Loan.objects.filter(member=member_profile).order_by('-issue_date')[:5]
+            recent_fines = Fine.objects.filter(member=member_profile).order_by('-date_issued')[:5]
+        else:
+            # Fallback if the user hasn't been linked to a member profile yet
+            total_savings = active_loans_count = total_loan_value = unpaid_fines = 0.00
+            recent_contributions = recent_loans = recent_fines = []
+
+    # 2. NORMALIZE AND MERGE ACTIVITY FEED
     for c in recent_contributions:
         c.type = 'Contribution'
         c.display_amount = c.amount
@@ -46,15 +70,11 @@ def dashboard(request):
         f.display_amount = f.amount
         f.common_date = f.date_issued
 
-
     activity_feed = sorted(
         chain(recent_contributions, recent_loans, recent_fines),
         key=attrgetter('common_date'),
         reverse=True
-    )
-
-    # Take the top 10 most recent events
-    activity_feed = activity_feed[:10]
+    )[:10]
 
     context = {
         'total_members': total_members,

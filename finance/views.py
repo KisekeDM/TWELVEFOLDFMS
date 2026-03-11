@@ -17,8 +17,12 @@ def is_admin(user):
 
 @login_required
 def contribution_list(request):
-    # Show latest contributions first
-    contributions = Contribution.objects.all().order_by('-date')
+    if request.user.is_staff:
+        contributions = Contribution.objects.all().order_by('-date')
+    else:
+        member = getattr(request.user, 'member_profile', None)
+        contributions = Contribution.objects.filter(member=member).order_by('-date') if member else []
+
     return render(request, 'finance/contribution_list.html', {'contributions': contributions})
 
 @login_required
@@ -37,7 +41,12 @@ def add_contribution(request):
 
 @login_required
 def loan_list(request):
-    loans = Loan.objects.all().order_by('-issue_date')
+    if request.user.is_staff:
+        loans = Loan.objects.all().order_by('-issue_date')
+    else:
+        member = getattr(request.user, 'member_profile', None)
+        loans = Loan.objects.filter(member=member).order_by('-issue_date') if member else []
+
     return render(request, 'finance/loan_list.html', {'loans': loans})
 
 @login_required
@@ -66,6 +75,9 @@ def loan_detail(request, loan_id):
             if 'action' in request.POST:
                 if not request.user.is_staff:  # <--- Manual check inside the view
                     messages.error(request, "You do not have permission to approve loans.")
+                    return redirect('loan_detail', loan_id=loan.id)
+                if not request.user.is_staff:
+                    messages.error(request, "You do not have permission to record repayments.")
                     return redirect('loan_detail', loan_id=loan.id)
             # Handle Repayment Submission
             form = RepaymentForm(request.POST)
@@ -101,8 +113,12 @@ def loan_detail(request, loan_id):
 
 @login_required
 def fine_list(request):
-    # Order by 'is_paid' (False first) so unpaid fines appear at the top
-    fines = Fine.objects.all().order_by('is_paid', '-date_issued')
+    if request.user.is_staff:
+        fines = Fine.objects.all().order_by('is_paid', '-date_issued')
+    else:
+        member = getattr(request.user, 'member_profile', None)
+        fines = Fine.objects.filter(member=member).order_by('is_paid', '-date_issued') if member else []
+
     return render(request, 'finance/fine_list.html', {'fines': fines})
 
 @login_required

@@ -57,6 +57,7 @@
 
                 {% if loan.status == 'Active' %}
                 <div class="row">
+                    {% if user.is_staff %}
                     <div class="col-md-6">
                         <h5 class="mb-3">Record New Repayment</h5>
                         <div class="card bg-light border-0">
@@ -77,17 +78,18 @@
                             </div>
                         </div>
                     </div>
+                    {% endif %}
 
-                    <div class="col-md-6">
+                    <div class="{% if user.is_staff %}col-md-6{% else %}col-md-12{% endif %}">
                         <h5 class="mb-3">Payment History</h5>
-                        <ul class="list-group">
+                        <ul class="list-group shadow-sm">
                             {% for payment in loan.repayments.all %}
                             <li class="list-group-item d-flex justify-content-between align-items-center">
                                 {{ payment.date_paid }}
                                 <span class="badge bg-success rounded-pill">KES {{ payment.amount }}</span>
                             </li>
                             {% empty %}
-                            <li class="list-group-item text-muted text-center">No payments recorded yet.</li>
+                            <li class="list-group-item text-muted text-center py-4">No payments recorded yet.</li>
                             {% endfor %}
                         </ul>
                     </div>

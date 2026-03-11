@@ -1,8 +1,11 @@
 from django.db import models
 from django.utils import timezone
+from django.contrib.auth.models import User
 
 
 class Member(models.Model):
+    user = models.OneToOneField(User, on_delete=models.SET_NULL, null=True, blank=True, related_name='member_profile')
+
     # Matches SDS D1: Members
     first_name = models.CharField(max_length=50)
     last_name = models.CharField(max_length=50)
