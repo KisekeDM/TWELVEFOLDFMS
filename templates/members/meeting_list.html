@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>MEETING LIST</title>
+</head>
+<body>
+{% extends 'base.html' %}
+
+{% block title %}Meetings List{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2">Meeting Register</h1>
+    <div class="btn-toolbar mb-2 mb-md-0">
+        {% if user.is_staff %}
+        <a href="{% url 'record_meeting' %}" class="btn btn-sm btn-primary-custom">
+            + Record New Meeting
+        </a>
+        {% endif %}
+    </div>
+</div>
+
+<div class="card shadow-sm">
+    <div class="card-body">
+        <table class="table table-hover">
+            <thead class="table-light">
+                <tr>
+                    <th>Date</th>
+                    <th>Meeting Title</th>
+                    <th>Attendees</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for meeting in meetings %}
+                <tr>
+                    <td>{{ meeting.date|date:"M d, Y" }}</td>
+                    <td class="fw-bold">{{ meeting.title }}</td>
+                    <td>
+                        <span class="badge bg-success">{{ meeting.attendees.count }} Present</span>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="3" class="text-center text-muted py-4">No meetings recorded yet.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}
+</body>
+</html>

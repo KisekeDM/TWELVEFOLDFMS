@@ -24,9 +24,13 @@
                 <form method="post">
                     {% csrf_token %}
 
-                    <div class="mb-3">
+                    <div class="mb-3 {% if not user.is_staff %}d-none{% endif %}">
                         <label class="form-label">Applicant</label>
                         {{ form.member }}
+                    </div>
+
+                    <div class="alert alert-warning mb-4">
+                        <i class="bi bi-info-circle"></i> <strong>Loan Limit Policy:</strong> You can only borrow up to 60% of your total contributions. You cannot have more than one active loan at a time.
                     </div>
 
                     <div class="row g-3 mb-3">
@@ -37,6 +41,19 @@
                         <div class="col-md-6">
                             <label class="form-label">Duration (Months)</label>
                             {{ form.duration_months }}
+                        </div>
+                    </div>
+
+                    <div class="card bg-light border-0 mb-4">
+                        <div class="card-body">
+                            <div class="form-check mb-2">
+                                {{ form.is_on_behalf }}
+                                <label class="form-check-label fw-bold">Applying on behalf of another member?</label>
+                            </div>
+                            <div class="mt-2">
+                                <label class="form-label text-muted small">Select Beneficiary</label>
+                                {{ form.beneficiary }}
+                            </div>
                         </div>
                     </div>
 

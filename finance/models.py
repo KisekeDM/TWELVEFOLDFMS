@@ -30,6 +30,11 @@ class Loan(models.Model):
     member = models.ForeignKey(Member, on_delete=models.CASCADE)
     principal_amount = models.DecimalField(max_digits=10, decimal_places=2)
 
+    # NEW FIELDS FOR "ON BEHALF" LOANS
+    is_on_behalf = models.BooleanField(default=False, verbose_name="Applying on behalf of someone else?")
+    beneficiary = models.ForeignKey(Member, on_delete=models.SET_NULL, null=True, blank=True,
+                                    related_name='benefited_loans', help_text="Leave blank if this loan is for you.")
+
     # Interest Rate (1-20%) [cite: 1083]
     interest_rate = models.DecimalField(max_digits=5, decimal_places=2, default=10.00)
 

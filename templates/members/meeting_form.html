@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>MEETING FORM</title>
+</head>
+<body>
+{% extends 'base.html' %}
+
+{% block title %}Record Meeting{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card shadow-sm">
+            <div class="card-header card-header-custom">
+                <h5 class="mb-0">Record Meeting & Attendance</h5>
+            </div>
+            <div class="card-body">
+                <div class="alert alert-info">
+                    <i class="bi bi-info-circle"></i> <strong>Note:</strong> Anyone left unchecked below will be automatically fined <strong>KES 100</strong> for absenteeism.
+                </div>
+
+                <form method="post">
+                    {% csrf_token %}
+
+                    <div class="row g-3 mb-4">
+                        <div class="col-md-8">
+                            <label class="form-label">Meeting Title</label>
+                            {{ form.title }}
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label">Date</label>
+                            {{ form.date }}
+                        </div>
+                    </div>
+
+                    <h6 class="border-bottom pb-2 mb-3">Attendance Roll Call (Check if Present)</h6>
+                    <div class="row">
+                        {% for checkbox in form.attendees %}
+                        <div class="col-md-6 mb-2">
+                            <div class="form-check border rounded p-2 bg-light">
+                                {{ checkbox.tag }}
+                                <label class="form-check-label ms-2" for="{{ checkbox.id_for_label }}">
+                                    {{ checkbox.choice_label }}
+                                </label>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+
+                    <div class="mt-4 d-flex justify-content-end">
+                        <a href="{% url 'meeting_list' %}" class="btn btn-secondary me-2">Cancel</a>
+                        <button type="submit" class="btn btn-primary-custom">Save & Issue Fines</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+</body>
+</html>

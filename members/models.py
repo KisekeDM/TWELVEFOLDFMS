@@ -36,3 +36,11 @@ class Member(models.Model):
     class Meta:
         ordering = ['first_name']
 
+class Meeting(models.Model):
+    date = models.DateField(default=timezone.now)
+    title = models.CharField(max_length=100, default="Monthly General Meeting")
+    # ManyToMany lets us select multiple members who attended
+    attendees = models.ManyToManyField(Member, blank=True, related_name="meetings_attended")
+
+    def __str__(self):
+        return f"{self.title} - {self.date}"

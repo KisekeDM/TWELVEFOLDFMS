@@ -19,12 +19,13 @@ class ContributionForm(forms.ModelForm):
 class LoanForm(forms.ModelForm):
     class Meta:
         model = Loan
-        fields = ['member', 'principal_amount', 'duration_months', 'issue_date']
+        fields = ['member', 'is_on_behalf', 'beneficiary', 'principal_amount', 'duration_months', 'issue_date']
 
         widgets = {
             'member': forms.Select(attrs={'class': 'form-select'}),
-            'principal_amount': forms.NumberInput(
-                attrs={'class': 'form-control', 'placeholder': 'Enter amount (KES)'}),
+            'is_on_behalf': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
+            'beneficiary': forms.Select(attrs={'class': 'form-select'}),
+            'principal_amount': forms.NumberInput(attrs={'class': 'form-control', 'placeholder': 'Enter amount (KES)'}),
             'duration_months': forms.NumberInput(attrs={'class': 'form-control', 'placeholder': 'e.g. 1'}),
             'issue_date': forms.DateInput(attrs={'class': 'form-control', 'type': 'date'}),
         }

@@ -49,19 +49,61 @@ def loan_list(request):
 
     return render(request, 'finance/loan_list.html', {'loans': loans})
 
+
 @login_required
 def add_loan(request):
+    user_member_profile = getattr(request.user, 'member_profile', None)
+
+    # RULE 1: ONE ACTIVE LOAN AT A TIME (Idea 2)
+    # If not an admin, check if they already have an active/pending loan
+    if not request.user.is_staff and user_member_profile:
+        has_active_loan = Loan.objects.filter(
+            member=user_member_profile,
+            status__in=['Pending', 'Active']
+        ).exists()
+
+        if has_active_loan:
+            messages.error(request,
+                           "Application Denied: You already have an Active or Pending loan. Please clear it first.")
+            return redirect('loan_list')
+
     if request.method == 'POST':
         form = LoanForm(request.POST)
         if form.is_valid():
             loan = form.save(commit=False)
-            # The model default is 10%, but we can enforce it here if needed
-            loan.interest_rate = 10.00
+
+            # Security: If a regular user applies, force the applicant to be them
+            if not request.user.is_staff and user_member_profile:
+                loan.member = user_member_profile
+
+            # Validate "On Behalf" logic (Idea 3)
+            if loan.is_on_behalf and not loan.beneficiary:
+                messages.error(request, "You checked 'On Behalf' but didn't select a beneficiary.")
+                return render(request, 'finance/loan_form.html', {'form': form})
+
+            # RULE 2: THE 60% LIMIT (Idea 1)
+            # Calculate total contributions for the applicant
+            total_contributions = Contribution.objects.filter(member=loan.member).aggregate(Sum('amount'))[
+                                      'amount__sum'] or Decimal('0.00')
+            max_limit = float(total_contributions) * 0.60
+
+            if float(loan.principal_amount) > max_limit:
+                messages.error(request,
+                               f"Application Denied: Your requested amount (KES {loan.principal_amount}) exceeds your 60% limit. Your maximum allowed loan is KES {max_limit:.2f}.")
+                return render(request, 'finance/loan_form.html', {'form': form})
+
+            # If all checks pass, save the loan
+            loan.interest_rate = 10.00  # Assuming you kept it at 10%
             loan.save()
             messages.success(request, 'Loan application submitted successfully!')
             return redirect('loan_list')
     else:
         form = LoanForm()
+
+        # UI Tweak: If regular user, hide the "Applicant" dropdown so they can't pick someone else
+        if not request.user.is_staff and user_member_profile:
+            form.fields['member'].initial = user_member_profile
+            form.fields['member'].widget = forms.HiddenInput()
 
     return render(request, 'finance/loan_form.html', {'form': form})
 
