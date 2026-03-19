@@ -12,12 +12,15 @@
 {% block content %}
 <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
     <h1 class="h2">Member Management</h1>
-    <div class="btn-toolbar mb-2 mb-md-0">
-        {% if user.is_staff %}
-    <a href="{% url 'add_member' %}" class="btn btn-sm btn-primary-custom">
-        + Register New Member
-    </a>
-        {% endif %}
+    <div class="d-flex gap-2">
+    {% if user.is_staff %}
+        <a href="{% url 'pending_approvals' %}" class="btn btn-sm btn-warning text-dark fw-bold">
+            <i class="bi bi-hourglass-split"></i> Pending Approvals
+        </a>
+        <a href="{% url 'add_member' %}" class="btn btn-sm btn-primary-custom">
+            + Register New Member
+        </a>
+    {% endif %}
     </div>
 </div>
 
@@ -51,7 +54,7 @@
                         </td>
                         {% if user.is_staff %}
                         <td>
-                            <a href="#" class="btn btn-sm btn-outline-secondary">Edit</a>
+                            <a href="{% url 'edit_member' member.id %}" class="btn btn-sm btn-outline-secondary">Edit</a>
                         </td>
                         {% endif %}
                     </tr>

@@ -15,7 +15,6 @@
         <div class="card shadow-lg border-0">
             <div class="card-header navbar-custom text-white text-center py-4">
                 <h4 class="mb-0 fw-bold">Twelvefold FMS</h4>
-                <small>Secure Access</small>
             </div>
             <div class="card-body p-4">
                 <form method="post">
@@ -39,6 +38,9 @@
 
                     <div class="d-grid">
                         <button type="submit" class="btn btn-primary-custom btn-lg">Sign In</button>
+                    </div>
+                    <div class="d-grid mt-3">
+                        <a href="{% url 'register' %}" class="btn btn-outline-secondary">Don't have an account? Sign Up</a>
                     </div>
                 </form>
             </div>

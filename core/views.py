@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.db.models import Sum, Count
 from members.models import Member
 from finance.models import Contribution, Loan, Fine
@@ -8,6 +8,8 @@ from operator import attrgetter
 from django.http import HttpResponse
 from django.conf import settings
 import os
+from django.contrib.auth.forms import UserCreationForm
+from django.contrib import messages
 
 
 @login_required
@@ -17,6 +19,10 @@ def dashboard(request):
 
     # Safely try to get the linked member profile (if it exists)
     member_profile = getattr(user, 'member_profile', None)
+
+    # --- THE APPROVAL GATE ---
+    if not is_admin and not member_profile:
+        return render(request, 'core/pending_approval.html')
 
     # 1. KPI COUNTERS & RECENT DATA SELECTION
     total_members = Member.objects.count()  # Everyone sees total member count
@@ -99,3 +105,21 @@ def download_backup(request):
             return response
     else:
         return HttpResponse("Database not found", status=404)
+
+
+def is_admin(user):
+    return user.is_staff
+
+
+def register(request):
+    if request.method == 'POST':
+        form = UserCreationForm(request.POST)
+        if form.is_valid():
+            form.save()
+            messages.success(request,
+                             'Account created successfully! Please log in. You will need Admin approval before accessing the system.')
+            return redirect('login')  # Send them to the login page
+    else:
+        form = UserCreationForm()
+
+    return render(request, 'core/register.html', {'form': form})

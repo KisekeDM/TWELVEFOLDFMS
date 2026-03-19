@@ -1,3 +1,4 @@
+from django import forms
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from .models import Contribution
@@ -11,6 +12,7 @@ from .forms import ReportFilterForm
 from django.db.models import Sum
 from decimal import Decimal
 from django.contrib.auth.decorators import login_required, user_passes_test
+
 
 def is_admin(user):
     return user.is_staff

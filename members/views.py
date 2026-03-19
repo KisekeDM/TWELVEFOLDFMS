@@ -1,4 +1,4 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from .forms import MemberForm
 from .models import Member
@@ -7,6 +7,7 @@ from finance.models import Fine
 from decimal import Decimal
 from .forms import MeetingForm
 from .models import Meeting
+from django.contrib.auth.models import User
 
 def is_admin(user):
     return user.is_staff
@@ -73,3 +74,66 @@ def record_meeting(request):
         form = MeetingForm()
 
     return render(request, 'members/meeting_form.html', {'form': form})
+
+
+@login_required
+@user_passes_test(is_admin)
+def edit_member(request, member_id):
+    # Fetch the specific member
+    member = get_object_or_404(Member, id=member_id)
+
+    if request.method == 'POST':
+        # Pass the existing member instance to the form
+        form = MemberForm(request.POST, instance=member)
+        if form.is_valid():
+            form.save()
+            messages.success(request, f'{member.first_name}\'s profile updated successfully!')
+            return redirect('member_list')
+    else:
+        # Pre-fill the form with the member's current data
+        form = MemberForm(instance=member)
+
+    # We can reuse the exact same member_form.html template!
+    return render(request, 'members/member_form.html', {'form': form, 'is_edit': True})
+
+
+@login_required
+@user_passes_test(is_admin)
+def pending_approvals(request):
+    if request.method == 'POST':
+        action = request.POST.get('action')
+        user_id = request.POST.get('user_id')
+
+        try:
+            user_to_approve = User.objects.get(id=user_id)
+
+            if action == 'approve':
+                member_id = request.POST.get('member_id')
+                if member_id:
+                    member_profile = Member.objects.get(id=member_id)
+                    member_profile.user = user_to_approve
+                    member_profile.save()
+                    messages.success(request,
+                                     f"Successfully linked {user_to_approve.username} to {member_profile.first_name}.")
+                else:
+                    messages.error(request, "You must select a member profile to link.")
+
+            elif action == 'reject':
+                user_to_approve.delete()  # Delete the unauthorized user account
+                messages.success(request, "User registration rejected and deleted.")
+
+        except (User.DoesNotExist, Member.DoesNotExist):
+            messages.error(request, "An error occurred. Please try again.")
+
+        return redirect('pending_approvals')
+
+    # Fetch users with no linked member profile
+    pending_users = User.objects.filter(is_staff=False, member_profile__isnull=True)
+
+    # Fetch members who do not have a user account linked yet
+    available_members = Member.objects.filter(user__isnull=True)
+
+    return render(request, 'members/pending_approvals.html', {
+        'pending_users': pending_users,
+        'available_members': available_members
+    })

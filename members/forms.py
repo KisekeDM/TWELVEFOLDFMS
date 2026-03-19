@@ -13,7 +13,6 @@ class MemberForm(forms.ModelForm):
             'first_name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Enter first name'}),
             'last_name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Enter last name'}),
             'phone_number': forms.TextInput(attrs={'class': 'form-control', 'placeholder': '07XX XXX XXX'}),
-            'monthly_contribution_amount': forms.NumberInput(attrs={'class': 'form-control'}),
             'date_joined': forms.DateInput(attrs={'class': 'form-control', 'type': 'date'}),
         }
 

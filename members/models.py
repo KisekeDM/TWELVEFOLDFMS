@@ -24,7 +24,7 @@ class Member(models.Model):
     monthly_contribution_amount = models.DecimalField(
         max_digits=10,
         decimal_places=2,
-        default=1000.00
+        default=0.00
     )
 
     # Status to handle "Deactivate Member" requirement [cite: 868]
