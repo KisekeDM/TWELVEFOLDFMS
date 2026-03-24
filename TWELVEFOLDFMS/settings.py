@@ -126,3 +126,10 @@ STATICFILES_DIRS = [
 LOGIN_REDIRECT_URL = '/'   # Redirect to Dashboard (Home)
 LOGOUT_REDIRECT_URL = '/accounts/login/' # Redirect back to login page
 LOGIN_URL = '/accounts/login/' # Where to send unauthenticated users
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+
+# Custom Authentication Settings
+AUTHENTICATION_BACKENDS = [
+    'core.backends.EmailAuthBackend',           # Try our custom Email/Username logic first
+    'django.contrib.auth.backends.ModelBackend', # Fallback to standard Django logic
+]

@@ -10,6 +10,7 @@ from django.conf import settings
 import os
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib import messages
+from .forms import EmailRegistrationForm
 
 
 @login_required
@@ -113,13 +114,13 @@ def is_admin(user):
 
 def register(request):
     if request.method == 'POST':
-        form = UserCreationForm(request.POST)
+        form = EmailRegistrationForm(request.POST)  # <-- Updated here
         if form.is_valid():
             form.save()
             messages.success(request,
                              'Account created successfully! Please log in. You will need Admin approval before accessing the system.')
-            return redirect('login')  # Send them to the login page
+            return redirect('login')
     else:
-        form = UserCreationForm()
+        form = EmailRegistrationForm()  # <-- Updated here
 
     return render(request, 'core/register.html', {'form': form})

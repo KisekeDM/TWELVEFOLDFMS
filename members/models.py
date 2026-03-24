@@ -21,11 +21,7 @@ class Member(models.Model):
     date_joined = models.DateField(default=timezone.now)
 
     # Default contribution is KES 1000 based on SRS sample data [cite: 1248]
-    monthly_contribution_amount = models.DecimalField(
-        max_digits=10,
-        decimal_places=2,
-        default=0.00
-    )
+    monthly_contribution_amount = models.DecimalField(max_digits=10, decimal_places=2, default=0.00, blank=True, null=True)
 
     # Status to handle "Deactivate Member" requirement [cite: 868]
     is_active = models.BooleanField(default=True)

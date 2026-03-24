@@ -6,7 +6,7 @@ from .models import Meeting
 class MemberForm(forms.ModelForm):
     class Meta:
         model = Member
-        fields = ['first_name', 'last_name', 'phone_number', 'monthly_contribution_amount', 'date_joined']
+        fields = ['first_name', 'last_name', 'phone_number', 'date_joined']
 
         # We use 'widgets' to add Bootstrap classes to the input fields
         widgets = {
