@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect
 from django.db.models import Sum, Count
 from members.models import Member
-from finance.models import Contribution, Loan, Fine
+from finance.models import Contribution, Loan, Fine, Repayment
 from django.contrib.auth.decorators import login_required
 from itertools import chain
 from operator import attrgetter
@@ -11,6 +11,7 @@ import os
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib import messages
 from .forms import EmailRegistrationForm
+
 
 
 @login_required
@@ -29,13 +30,23 @@ def dashboard(request):
     total_members = Member.objects.count()  # Everyone sees total member count
 
     if is_admin:
-        # ADMIN SEES EVERYTHING
-        savings_data = Contribution.objects.aggregate(Sum('amount'))
-        loan_data = Loan.objects.filter(status='Active').aggregate(Sum('principal_amount'))
+        # --- MONEY IN ---
+        contributions_in = Contribution.objects.aggregate(Sum('amount'))['amount__sum'] or 0.00
+        fines_in = Fine.objects.filter(is_paid=True).aggregate(Sum('amount'))['amount__sum'] or 0.00
+        repayments_in = Repayment.objects.aggregate(Sum('amount'))['amount__sum'] or 0.00
 
-        total_savings = savings_data['amount__sum'] or 0.00
+        # --- MONEY OUT ---
+        # We only subtract loans that were actually given out (Active or Cleared)
+        loans_out = Loan.objects.filter(status__in=['Active', 'Cleared']).aggregate(Sum('principal_amount'))[
+                        'principal_amount__sum'] or 0.00
+
+        # --- UNIFIED GROUP TREASURY ---
+        available_group_funds = (contributions_in + fines_in + repayments_in) - loans_out
+
+        # Keep the other stats for the smaller cards
+        total_savings = contributions_in  # Just the raw savings number
         active_loans_count = Loan.objects.filter(status='Active').count()
-        total_loan_value = loan_data['principal_amount__sum'] or 0.00
+        total_loan_value = loans_out
         unpaid_fines = Fine.objects.filter(is_paid=False).count()
 
         recent_contributions = Contribution.objects.all().order_by('-date')[:5]
@@ -44,6 +55,9 @@ def dashboard(request):
 
     else:
         # REGULAR USER SEES ONLY THEIR DATA
+
+        available_group_funds = 0.00
+
         if member_profile:
             savings_data = Contribution.objects.filter(member=member_profile).aggregate(Sum('amount'))
             loan_data = Loan.objects.filter(member=member_profile, status='Active').aggregate(Sum('principal_amount'))
@@ -86,6 +100,7 @@ def dashboard(request):
     context = {
         'total_members': total_members,
         'total_savings': total_savings,
+        'available_group_funds': available_group_funds,
         'active_loans_count': active_loans_count,
         'total_loan_value': total_loan_value,
         'unpaid_fines': unpaid_fines,
