@@ -166,7 +166,7 @@
 </div>
 <script>
 function showBackupSuccess() {
-    // 1. Create the green Bootstrap alert exactly like Django's native messages
+
     const alertDiv = document.createElement('div');
     alertDiv.className = 'alert alert-success alert-dismissible fade show shadow-sm mb-4';
     alertDiv.role = 'alert';
@@ -175,11 +175,11 @@ function showBackupSuccess() {
         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
     `;
 
-    // 2. Find the top of the dashboard and insert the message
+
     const dashboardTop = document.querySelector('.row');
     dashboardTop.parentNode.insertBefore(alertDiv, dashboardTop);
 
-    // 3. Make it automatically disappear after 5 seconds so it doesn't clutter the screen
+
     setTimeout(() => {
         alertDiv.classList.remove('show');
         setTimeout(() => alertDiv.remove(), 15000); // wait for the fade animation to finish
